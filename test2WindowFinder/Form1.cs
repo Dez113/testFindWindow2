@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 // вариант 2 с работы
 namespace test2WindowFinder
@@ -53,8 +47,8 @@ namespace test2WindowFinder
 
             [DllImport("user32.dll")]
             public static extern bool SetCursorPos(int x, int y);
-            [DllImport("user32.dll")]
-            public static extern bool SetWindowText(IntPtr hWnd, string text);
+            //[DllImport("user32.dll")]
+            //public static extern bool SetWindowText(IntPtr hWnd, string text);
             [DllImport("user32.dll", SetLastError = true)]
             public static extern int SendMessage(IntPtr hWnd, uint wMsg, IntPtr wParam, string lParam);
             [DllImport("user32.dll", SetLastError = true)]
@@ -106,21 +100,17 @@ namespace test2WindowFinder
                     return;
                 }
                 //Console.WriteLine(hwndChild);
-                Coords coords = new Coords();                                                   // структура всех полей ввода
+                Coords coords = new Coords();                                                   // 
                 GetBox(hwndFrame, ref coords);
                 //WindowsFinder.SetCursorPos(976, 452);
                 //WindowsFinder.mouse_event(2 | 4, 976, 452,0 ,0);
                 hwndChild  = WindowsFinder.WindowFromPoint(new Point(976, 452));
 
-                //Console.WriteLine("This is it: "+hwndChild.ToString());
-                
-
-
-                SetValue(WindowsFinder.WindowFromPoint(new Point(coords.Ip[0], coords.Ip[1])), ip);
+                SetValue(WindowsFinder.WindowFromPoint(new Point(coords.Ip[0], coords.Ip[1])), ip);         //  устанавливаем значения
                 SetValue(WindowsFinder.WindowFromPoint(new Point(coords.Port[0], coords.Port[1])), port);
                 SetValue(WindowsFinder.WindowFromPoint(new Point(coords.Subnet[0], coords.Subnet[1])), subnet);
                 SetValue(WindowsFinder.WindowFromPoint(new Point(coords.Gw[0], coords.Gw[1])), gw);
-                Console.WriteLine(coords.Settings[0].ToString()+ coords.Settings[1].ToString());
+                //Console.WriteLine(coords.Settings[0].ToString()+ coords.Settings[1].ToString());
                 WindowsFinder.SetCursorPos(coords.Settings[0], coords.Settings[1]);
                 WindowsFinder.mouse_event(2 | 4, coords.Settings[0], coords.Settings[1], 0, 0);
 
@@ -132,7 +122,7 @@ namespace test2WindowFinder
                 
             }
         }
-        public static void GetBox(IntPtr Frame, ref Coords coords)                          // получение всех полей ввода и запись их в структуру
+        public static void GetBox(IntPtr Frame, ref Coords coords)                          // получение координат всех полей ввода и запись их в структуру
         {
             Rect r = new Rect();
 
@@ -144,8 +134,10 @@ namespace test2WindowFinder
             coords.Gw = new int[2] { r.Left + 112 + 5, r.Top + 136 + 5};
             coords.Settings = new int[2] {r.Left + 112 + 5, r.Top + 368 + 5};
         }
-        public static void SetValue(IntPtr textbox, string value)
+        public static void SetValue(IntPtr textbox, string value)                           // выделяем текст в тектсбоксе, заменяем
         {
+            int lengthText = WindowsFinder.SendMessage(textbox, WindowsFinder.WM_GETTEXTLENGTH, IntPtr.Zero, IntPtr.Zero);
+            WindowsFinder.SendMessage(textbox, WindowsFinder.EM_SETSEL, IntPtr.Zero, (IntPtr)(lengthText));
             WindowsFinder.SendMessage(textbox, WindowsFinder.EM_REPLACESEL, IntPtr.Zero, value);
         }
     }
