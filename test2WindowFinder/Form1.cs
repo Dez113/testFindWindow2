@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -37,7 +38,6 @@ namespace test2WindowFinder
             InitializeComponent();
 
         }
-        // private const int BN_CLICKED = 245;
         public static class WindowsFinder
         {
             public const uint WM_SETTEXT = 0x000C;
@@ -47,8 +47,6 @@ namespace test2WindowFinder
 
             [DllImport("user32.dll")]
             public static extern bool SetCursorPos(int x, int y);
-            //[DllImport("user32.dll")]
-            //public static extern bool SetWindowText(IntPtr hWnd, string text);
             [DllImport("user32.dll", SetLastError = true)]
             public static extern int SendMessage(IntPtr hWnd, uint wMsg, IntPtr wParam, string lParam);
             [DllImport("user32.dll", SetLastError = true)]
@@ -73,10 +71,7 @@ namespace test2WindowFinder
             IntPtr hwndFrame = IntPtr.Zero;
 
             Rect rect = new Rect();
-            //Get a handle for the Calculator Application main window
             hwnd = WindowsFinder.FindWindow(null, "WIZ100SR/105SR/110SR Configuration Tool ver 3.0.2");
-            //Console.WriteLine(hwnd);
-
             if (hwnd == IntPtr.Zero)
                 {
                     if (MessageBox.Show("Не могу найти конфигуратор УСПД!\n" +
@@ -84,7 +79,7 @@ namespace test2WindowFinder
                                        ":-)",
                                        MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
-                    System.Diagnostics.Process.Start(@"");
+                    System.Diagnostics.Process.Start(@"C:\Program Files\Common Files\WIZ1x0SR_105SR_CFG_V3_0_2.exe");
                 }
             }
             else
@@ -99,7 +94,6 @@ namespace test2WindowFinder
                 {
                     return;
                 }
-                //Console.WriteLine(hwndChild);
                 Coords coords = new Coords();                                                   // 
                 GetBox(hwndFrame, ref coords);
                 //WindowsFinder.SetCursorPos(976, 452);
@@ -110,16 +104,8 @@ namespace test2WindowFinder
                 SetValue(WindowsFinder.WindowFromPoint(new Point(coords.Port[0], coords.Port[1])), port);
                 SetValue(WindowsFinder.WindowFromPoint(new Point(coords.Subnet[0], coords.Subnet[1])), subnet);
                 SetValue(WindowsFinder.WindowFromPoint(new Point(coords.Gw[0], coords.Gw[1])), gw);
-                //Console.WriteLine(coords.Settings[0].ToString()+ coords.Settings[1].ToString());
                 WindowsFinder.SetCursorPos(coords.Settings[0], coords.Settings[1]);
                 WindowsFinder.mouse_event(2 | 4, coords.Settings[0], coords.Settings[1], 0, 0);
-
-
-                //Console.WriteLine("Lenght: "+(WindowsFinder.SendMessage(hwndChild, WindowsFinder.WM_GETTEXTLENGTH, IntPtr.Zero, IntPtr.Zero)).ToString());
-               
-                //hwndChild = WindowsFinder.FindWindowEx(hwnd, IntPtr.Zero, "ThunderRT6TextBox", null); //ThunderRT6TextBox", "msvb_lib_toolbar");//
-                //Console.WriteLine(hwndChild);
-                
             }
         }
         public static void GetBox(IntPtr Frame, ref Coords coords)                          // получение координат всех полей ввода и запись их в структуру
@@ -139,6 +125,54 @@ namespace test2WindowFinder
             int lengthText = WindowsFinder.SendMessage(textbox, WindowsFinder.WM_GETTEXTLENGTH, IntPtr.Zero, IntPtr.Zero);
             WindowsFinder.SendMessage(textbox, WindowsFinder.EM_SETSEL, IntPtr.Zero, (IntPtr)(lengthText));
             WindowsFinder.SendMessage(textbox, WindowsFinder.EM_REPLACESEL, IntPtr.Zero, value);
+        }
+
+        public List<IpParams> GetListIpParams()
+        {
+            List<IpParams> ipList = new List<IpParams>();
+            foreach(DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.Cells[0].Value.ToString() != null)
+                {
+                    ipList.Add(new IpParams(row.Cells[0].Value.ToString(), row.Cells[1].Value.ToString(), row.Cells[2].Value.ToString(),
+                        row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString()));
+                    Console.WriteLine(row.Cells[0].Value.ToString(), row.Cells[1].Value.ToString(), row.Cells[2].Value.ToString(),
+                        row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString());
+                }
+            }
+            return ipList;
+        }
+        public void UpdateDataGrid(List<IpParams> itemsList)                                         // обновление datagrid
+        {
+            dataGridView1.Rows.Clear();
+            foreach (IpParams item in itemsList)
+            {
+                dataGridView1.Rows.Add(item._name, item._ip, item._port, item._sub, item._gw);
+            }
+        }
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)               //  сохраняем данные при закрытии
+        {
+            List<IpParams> ipList = GetListIpParams();
+            DataSaver.Save(ipList);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)                                 //  загружаем данные
+        {
+            UpdateDataGrid(DataSaver.Restore());
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_DoubleClick(object sender, EventArgs e)
+        {
+            ip = dataGridView1.SelectedRows[0].Cells[1].Value.ToString();
+            port = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
+            subnet = dataGridView1.SelectedRows[0].Cells[3].Value.ToString();
+            gw = dataGridView1.SelectedRows[0].Cells[4].Value.ToString();
+            button1.PerformClick();
         }
     }
 }
