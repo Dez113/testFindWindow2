@@ -132,12 +132,12 @@ namespace test2WindowFinder
             List<IpParams> ipList = new List<IpParams>();
             foreach(DataGridViewRow row in dataGridView1.Rows)
             {
-                if (row.Cells[0].Value.ToString() != null)
+                if (row.Cells[0].Value != null)
                 {
                     ipList.Add(new IpParams(row.Cells[0].Value.ToString(), row.Cells[1].Value.ToString(), row.Cells[2].Value.ToString(),
                         row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString()));
-                    Console.WriteLine(row.Cells[0].Value.ToString(), row.Cells[1].Value.ToString(), row.Cells[2].Value.ToString(),
-                        row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString());
+                    Console.WriteLine(row.Cells[0].Value.ToString()+row.Cells[1].Value.ToString()+ row.Cells[2].Value.ToString()+
+                        row.Cells[3].Value.ToString()+ row.Cells[4].Value.ToString());
                 }
             }
             return ipList;
@@ -153,6 +153,8 @@ namespace test2WindowFinder
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)               //  сохраняем данные при закрытии
         {
             List<IpParams> ipList = GetListIpParams();
+            //DataSaver.onSave(ref ipList);
+            
             DataSaver.Save(ipList);
         }
 
@@ -161,26 +163,17 @@ namespace test2WindowFinder
             UpdateDataGrid(DataSaver.Restore());
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
         private void dataGridView1_DoubleClick(object sender, EventArgs e)
         {
             int rowIndex = dataGridView1.SelectedCells[0].RowIndex;
-            Console.WriteLine(rowIndex);
+            //Console.WriteLine(rowIndex);
 
             ip = dataGridView1.Rows[rowIndex].Cells[1].Value.ToString();
             port = dataGridView1.Rows[rowIndex].Cells[2].Value.ToString();
             subnet = dataGridView1.Rows[rowIndex].Cells[3].Value.ToString();
             gw = dataGridView1.Rows[rowIndex].Cells[4].Value.ToString();
             button1.PerformClick();
-            if (dataGridView1.SelectedCells.Count > 0)
-            {
-                
-            }
-            
+            //System.Diagnostics.Process.Start("netsh interface ip set address name=\"Подключение по локальной сети\" static 10.0.2.5 255.255.255.0 192.168.88.15");
         }
     }
 }

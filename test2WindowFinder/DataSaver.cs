@@ -8,16 +8,8 @@ namespace test2WindowFinder
 {
     class DataSaver
     {
-        public delegate void DataSaving(ref List<IpParams> dict);
-        public delegate void DataRestoring(ref List<IpParams> dict);
-        public static DataSaving onSave;
-        public static DataSaving onRestore;
-
         public static void Save(List<IpParams> dict)
         {
-            //List<IpParams> dict = new List<IpParams>();
-            //onSave(ref dict);
-
             string json = JsonConvert.SerializeObject(dict);
             byte[] save_data = Encoding.UTF8.GetBytes(json);
             FileStream fs1 = new FileStream("saves.json", FileMode.Create);
@@ -29,12 +21,8 @@ namespace test2WindowFinder
             StreamReader fs = new StreamReader("saves.json");
             string json = fs.ReadToEnd();
             fs.Close();
-            Newtonsoft.Json.Linq.JObject obj = Newtonsoft.Json.Linq.JObject.Parse(json);
-            //Console.WriteLine(obj);
-            List<IpParams> dict = obj.ToObject<List<IpParams>>();
-            //Console.WriteLine(dict["contacts"]);
-            //onRestore(ref dict);
-            return dict;
+            List<IpParams> ips = JsonConvert.DeserializeObject<List<IpParams>>(json);
+            return ips;
         }
     }
 }
