@@ -158,11 +158,16 @@ namespace test2WindowFinder
         {
             List<IpParams> ipList = GetListIpParams();
             DataSaver.Save(ipList);
+            Properties.Settings.Default.adapterName = networkAdapterName;
+            Properties.Settings.Default.Save();
         }
 
         private void Form1_Load(object sender, EventArgs e)                                 //  загружаем данные
         {
+
             UpdateDataGrid(DataSaver.Restore());
+            networkAdapterName = Properties.Settings.Default.adapterName;
+            textBox1.Text = networkAdapterName;
         }
 
         public static void ChangeIP(string ip, string sub, string gw)
@@ -190,13 +195,22 @@ namespace test2WindowFinder
         }
         private void dataGridView1_DoubleClick(object sender, EventArgs e)
         {
+            networkAdapterName = textBox1.Text;
             int rowIndex = dataGridView1.SelectedCells[0].RowIndex;
             ip = dataGridView1.Rows[rowIndex].Cells[1].Value.ToString();
             port = dataGridView1.Rows[rowIndex].Cells[2].Value.ToString();
             subnet = dataGridView1.Rows[rowIndex].Cells[3].Value.ToString();
             gw = dataGridView1.Rows[rowIndex].Cells[4].Value.ToString();
             button1.PerformClick();
-            ChangeIP(ip, subnet, gw);
+            if (networkAdapterName != string.Empty)
+            {
+                ChangeIP(networkAdapterName, ip, subnet, gw);
+            }
+            else
+            {
+                ChangeIP(ip, subnet, gw);
+            }
+            
         }
     }
 }
