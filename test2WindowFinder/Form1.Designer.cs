@@ -63,7 +63,7 @@
             this.dataGridView1.Location = new System.Drawing.Point(12, 40);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(623, 270);
+            this.dataGridView1.Size = new System.Drawing.Size(676, 305);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.DoubleClick += new System.EventHandler(this.dataGridView1_DoubleClick);
             // 
