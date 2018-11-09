@@ -165,7 +165,7 @@ namespace test2WindowFinder
             UpdateDataGrid(DataSaver.Restore());
         }
 
-        public static void MakeBatFile(string ip, string sub, string gw)
+        public static void ChangeIP(string ip, string sub, string gw)
         {
             string[] subipNew = ip.Split('.');
             int forthoctet = Int32.Parse(subipNew[3])-1;
@@ -177,6 +177,17 @@ namespace test2WindowFinder
             p.WaitForExit();
         }
 
+        public static void ChangeIP(string adapterName, string ip, string sub, string gw)
+        {
+            string[] subipNew = ip.Split('.');
+            int forthoctet = Int32.Parse(subipNew[3]) - 1;
+            ip = String.Format("{0}.{1}.{2}.{3}", subipNew[0], subipNew[1], subipNew[2], forthoctet.ToString());
+            Process p = new Process();
+            ProcessStartInfo psi = new ProcessStartInfo("netsh", String.Format("interface ip set address \"{0}\" static {1} {2} {3}",adapterName, ip, sub, gw));
+            p.StartInfo = psi;
+            p.Start();
+            p.WaitForExit();
+        }
         private void dataGridView1_DoubleClick(object sender, EventArgs e)
         {
             int rowIndex = dataGridView1.SelectedCells[0].RowIndex;
@@ -185,7 +196,7 @@ namespace test2WindowFinder
             subnet = dataGridView1.Rows[rowIndex].Cells[3].Value.ToString();
             gw = dataGridView1.Rows[rowIndex].Cells[4].Value.ToString();
             button1.PerformClick();
-            MakeBatFile(ip, subnet, gw);
+            ChangeIP(ip, subnet, gw);
         }
     }
 }
