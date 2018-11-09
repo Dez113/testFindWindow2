@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 // вариант 2 с работы
 namespace test2WindowFinder
 {
+    
     public partial class Form1 : Form
     {
-        string ip = "172.17.101.2";
-        string port = "4001";
-        string subnet = "255.255.255.192";
-        string gw = "172.17.100.99";
+        string ip = string.Empty;
+        string port = string.Empty;
+        string subnet = string.Empty;
+        string gw = string.Empty;
+        string networkAdapterName = string.Empty;
         const int WM_SETTEXT = 12;
         const int WM_LBUTTONDOWN = 0x0201;
         const int WM_LBUTTONUP = 0x0202;
@@ -160,6 +165,18 @@ namespace test2WindowFinder
             UpdateDataGrid(DataSaver.Restore());
         }
 
+        public static void MakeBatFile(string ip, string sub, string gw)
+        {
+            string[] subipNew = ip.Split('.');
+            int forthoctet = Int32.Parse(subipNew[3])-1;
+            ip = String.Format("{0}.{1}.{2}.{3}", subipNew[0], subipNew[1], subipNew[2], forthoctet.ToString());
+            Process p = new Process();
+            ProcessStartInfo psi = new ProcessStartInfo("netsh", String.Format("interface ip set address \"Подключение по локальной сети\" static {0} {1} {2}", ip, sub, gw));
+            p.StartInfo = psi;
+            p.Start();
+            p.WaitForExit();
+        }
+
         private void dataGridView1_DoubleClick(object sender, EventArgs e)
         {
             int rowIndex = dataGridView1.SelectedCells[0].RowIndex;
@@ -168,7 +185,7 @@ namespace test2WindowFinder
             subnet = dataGridView1.Rows[rowIndex].Cells[3].Value.ToString();
             gw = dataGridView1.Rows[rowIndex].Cells[4].Value.ToString();
             button1.PerformClick();
-            //System.Diagnostics.Process.Start("netsh interface ip set address name=\"Подключение по локальной сети\" static 10.0.2.5 255.255.255.0 192.168.88.15");
+            MakeBatFile(ip, subnet, gw);
         }
     }
 }
