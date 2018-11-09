@@ -113,7 +113,6 @@ namespace test2WindowFinder
             Rect r = new Rect();
 
             WindowsFinder.GetWindowRect(Frame, ref r);
-            //Position p = new Position();
             coords.Ip = new int[2] { r.Left + 112 + 5, r.Top + 88 + 5 };
             coords.Port = new int[2] { r.Left + 312 + 5, r.Top + 88 + 5 };
             coords.Subnet = new int[2] { r.Left + 112 + 5, r.Top + 112 + 5};
@@ -136,8 +135,8 @@ namespace test2WindowFinder
                 {
                     ipList.Add(new IpParams(row.Cells[0].Value.ToString(), row.Cells[1].Value.ToString(), row.Cells[2].Value.ToString(),
                         row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString()));
-                    Console.WriteLine(row.Cells[0].Value.ToString()+row.Cells[1].Value.ToString()+ row.Cells[2].Value.ToString()+
-                        row.Cells[3].Value.ToString()+ row.Cells[4].Value.ToString());
+                    //Console.WriteLine(row.Cells[0].Value.ToString()+row.Cells[1].Value.ToString()+ row.Cells[2].Value.ToString()+
+                      //  row.Cells[3].Value.ToString()+ row.Cells[4].Value.ToString());
                 }
             }
             return ipList;
@@ -153,8 +152,6 @@ namespace test2WindowFinder
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)               //  сохраняем данные при закрытии
         {
             List<IpParams> ipList = GetListIpParams();
-            //DataSaver.onSave(ref ipList);
-            
             DataSaver.Save(ipList);
         }
 
@@ -166,8 +163,6 @@ namespace test2WindowFinder
         private void dataGridView1_DoubleClick(object sender, EventArgs e)
         {
             int rowIndex = dataGridView1.SelectedCells[0].RowIndex;
-            //Console.WriteLine(rowIndex);
-
             ip = dataGridView1.Rows[rowIndex].Cells[1].Value.ToString();
             port = dataGridView1.Rows[rowIndex].Cells[2].Value.ToString();
             subnet = dataGridView1.Rows[rowIndex].Cells[3].Value.ToString();
