@@ -320,11 +320,11 @@ namespace test2WindowFinder
 
             if (networkAdapterName != string.Empty)
             {
-                //ChangeIP(networkAdapterName, ip, subnet, gw);
+                ChangeIP(networkAdapterName, ip, subnet, gw);
             }
             else
             {
-                //ChangeIP(ip, subnet, gw);
+                ChangeIP(ip, subnet, gw);
             }
         }
     }
